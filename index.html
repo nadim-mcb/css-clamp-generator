@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Clamp Generator - Responsive Typography Tool</title>
+    <meta name="description" content="Generate perfect CSS clamp() values for responsive typography with live visual preview. Free, fast, and beginner-friendly tool.">
+    <meta name="keywords" content="CSS clamp, responsive typography, fluid typography, CSS generator, web development tool">
+    
+    <!-- Preconnect for faster loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Fallback for no JavaScript -->
+    <noscript>
+        <style>
+            .js-required { display: none; }
+            .no-js-message { display: block; text-align: center; padding: 2rem; background: #fff3cd; color: #856404; border-radius: 8px; }
+        </style>
+    </noscript>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="header__title">CSS Clamp() Generator</h1>
+            <p class="header__subtitle">Create fluid, responsive typography with real-time preview</p>
+        </div>
+    </header>
+
+    <main class="main container">
+        <!-- No JavaScript fallback -->
+        <div class="no-js-message js-required" style="display: none;">
+            ⚡ JavaScript is required for the interactive generator. Please enable JavaScript to use this tool.
+        </div>
+
+        <div class="generator js-required">
+            <!-- Left Column - Inputs -->
+            <div class="generator__inputs">
+                <section class="inputs-section" aria-labelledby="inputs-heading">
+                    <h2 id="inputs-heading" class="section-heading">Font Settings</h2>
+                    
+                    <!-- Unit Selector -->
+                    <div class="control-group" role="group" aria-labelledby="unit-label">
+                        <span id="unit-label" class="control-group__label">Unit System</span>
+                        <div class="toggle-buttons">
+                            <button type="button" class="toggle-btn active" data-unit="px" aria-pressed="true">PX</button>
+                            <button type="button" class="toggle-btn" data-unit="rem" aria-pressed="false">REM</button>
+                        </div>
+                    </div>
+
+                    <!-- Font Size Controls -->
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="min-font" class="input-label">
+                                Min Font Size
+                                <span class="unit-indicator" id="min-font-unit">(px)</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="min-font" class="input-field" value="16" min="1" max="200" step="0.1" aria-describedby="min-font-help">
+                                <input type="range" id="min-font-range" class="range-slider" min="1" max="200" value="16" step="0.1" aria-label="Minimum font size slider">
+                            </div>
+                            <div class="input-help" id="min-font-help">Minimum font size at smallest viewport</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="max-font" class="input-label">
+                                Max Font Size
+                                <span class="unit-indicator" id="max-font-unit">(px)</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="max-font" class="input-field" value="32" min="1" max="200" step="0.1" aria-describedby="max-font-help">
+                                <input type="range" id="max-font-range" class="range-slider" min="1" max="200" value="32" step="0.1" aria-label="Maximum font size slider">
+                            </div>
+                            <div class="input-help" id="max-font-help">Maximum font size at largest viewport</div>
+                        </div>
+                    </div>
+
+                    <h2 class="section-heading" style="margin-top: 2rem;">Viewport Settings</h2>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="min-viewport" class="input-label">Min Viewport Width (px)</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="min-viewport" class="input-field" value="320" min="200" max="2000" step="10" aria-describedby="min-viewport-help">
+                                <input type="range" id="min-viewport-range" class="range-slider" min="200" max="2000" value="320" step="10" aria-label="Minimum viewport width slider">
+                            </div>
+                            <div class="input-help" id="min-viewport-help">Usually mobile width (e.g., 320px)</div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="max-viewport" class="input-label">Max Viewport Width (px)</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="max-viewport" class="input-field" value="1280" min="321" max="4000" step="10" aria-describedby="max-viewport-help">
+                                <input type="range" id="max-viewport-range" class="range-slider" min="321" max="4000" value="1280" step="10" aria-label="Maximum viewport width slider">
+                            </div>
+                            <div class="input-help" id="max-viewport-help">Usually desktop width (e.g., 1280px)</div>
+                        </div>
+                    </div>
+
+                    <!-- Presets -->
+                    <div class="presets-section" aria-labelledby="presets-label">
+                        <span id="presets-label" class="presets-label">Quick Presets:</span>
+                        <div class="presets-buttons">
+                            <button type="button" class="preset-btn" data-preset="heading">Heading</button>
+                            <button type="button" class="preset-btn" data-preset="body">Body Text</button>
+                            <button type="button" class="preset-btn" data-preset="small">Small Text</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button type="button" id="reset-btn" class="btn btn-secondary">Reset to Default</button>
+                        <button type="button" id="dark-mode-toggle" class="btn btn-secondary" aria-label="Toggle dark mode">🌓 Dark Mode</button>
+                    </div>
+
+                    <!-- Validation Messages -->
+                    <div id="validation-messages" class="validation-messages" role="alert" aria-live="polite"></div>
+                </section>
+            </div>
+
+            <!-- Right Column - Preview -->
+            <div class="generator__preview">
+                <div class="preview-sticky">
+                    <h2 class="section-heading">Live Preview</h2>
+                    
+                    <!-- Viewport Simulator -->
+                    <div class="viewport-simulator">
+                        <div class="viewport-controls">
+                            <label for="viewport-slider" class="viewport-label">Simulate Viewport Width: <span id="viewport-value">800px</span></label>
+                            <input type="range" id="viewport-slider" class="viewport-slider" min="200" max="2000" value="800" step="1" aria-label="Drag to simulate viewport width">
+                        </div>
+                        
+                        <!-- Preview Box -->
+                        <div class="preview-box" id="preview-box" style="--viewport-width: 800px;">
+                            <div class="preview-text" id="preview-text">
+                                The quick brown fox jumps over the lazy dog
+                            </div>
+                            <div class="preview-info">
+                                <span>Current font size: <span id="current-font-size">24px</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generated Code -->
+                    <div class="code-section">
+                        <div class="code-header">
+                            <h3 class="code-title">Generated CSS</h3>
+                            <button id="copy-btn" class="copy-btn" aria-label="Copy to clipboard">📋 Copy</button>
+                        </div>
+                        <pre class="code-block" id="generated-code"><code>font-size: clamp(1rem, calc(1rem + 1.25 * ((100vw - 320px) / 960)), 2.25rem);</code></pre>
+                        <div id="copy-tooltip" class="copy-tooltip" role="status" aria-live="polite">Copied!</div>
+                    </div>
+
+                    <!-- Media Query Equivalent -->
+                    <div class="code-section">
+                        <div class="code-header">
+                            <h3 class="code-title">Media Query Equivalent</h3>
+                            <button id="copy-mq-btn" class="copy-btn" aria-label="Copy media query">📋 Copy</button>
+                        </div>
+                        <pre class="code-block" id="media-query-code"><code>/* Traditional approach */</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>CSS Clamp Generator - Free responsive typography tool</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
