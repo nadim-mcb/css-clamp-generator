@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Clamp Generator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        
+        .generator {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .inputs-section {
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .preview-section {
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        input[type="range"] {
+            width: 200px;
+            margin-left: 10px;
+        }
+        
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .unit-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .unit-btn {
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .unit-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .presets {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .preset-btn {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .preset-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            background: #6c757d;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .btn:hover {
+            background: #5a6268;
+        }
+        
+        .preview-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin: 20px 0;
+            resize: horizontal;
+            overflow: auto;
+        }
+        
+        .preview-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .code-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            padding: 3px 8px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .validation {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            min-height: 40px;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        body.dark-mode {
+            background: #1e1e1e;
+            color: white;
+        }
+        
+        body.dark-mode .generator {
+            background: #2d2d2d;
+        }
+        
+        body.dark-mode .inputs-section,
+        body.dark-mode .preview-section {
+            background: #3d3d3d;
+        }
+        
+        @media (max-width: 768px) {
+            .generator {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CSS Clamp Generator</h1>
+        
+        <div class="generator">
+            <!-- Left Side - Inputs -->
+            <div class="inputs-section">
+                <h3>Font Settings</h3>
+                
+                <!-- Unit Toggle -->
+                <div class="unit-toggle">
+                    <button class="unit-btn active" id="unit-px">PX</button>
+                    <button class="unit-btn" id="unit-rem">REM</button>
+                </div>
+                
+                <!-- Min Font -->
+                <div class="control-group">
+                    <label>Min Font Size <span id="min-unit">(px)</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="min-font" value="16" min="1" max="200" step="0.1">
+                        <input type="range" id="min-font-range" min="1" max="200" value="16" step="0.1">
+                    </div>
+                </div>
+                
+                <!-- Max Font -->
+                <div class="control-group">
+                    <label>Max Font Size <span id="max-unit">(px)</span></label>
+                    <div class="input-wrapper">
+                        <input type="number" id="max-font" value="32" min="1" max="200" step="0.1">
+                        <input type="range" id="max-font-range" min="1" max="200" value="32" step="0.1">
+                    </div>
+                </div>
+                
+                <h3>Viewport Settings</h3>
+                
+                <!-- Min Viewport -->
+                <div class="control-group">
+                    <label>Min Viewport (px)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="min-viewport" value="320" min="200" max="2000" step="10">
+                        <input type="range" id="min-viewport-range" min="200" max="2000" value="320" step="10">
+                    </div>
+                </div>
+                
+                <!-- Max Viewport -->
+                <div class="control-group">
+                    <label>Max Viewport (px)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="max-viewport" value="1280" min="321" max="4000" step="10">
+                        <input type="range" id="max-viewport-range" min="321" max="4000" value="1280" step="10">
+                    </div>
+                </div>
+                
+                <!-- Presets -->
+                <div class="presets">
+                    <button class="preset-btn" data-preset="heading">Heading</button>
+                    <button class="preset-btn" data-preset="body">Body</button>
+                    <button class="preset-btn" data-preset="small">Small</button>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn" id="reset-btn">Reset</button>
+                    <button class="btn" id="dark-mode-toggle">Dark Mode</button>
+                </div>
+                
+                <!-- Validation -->
+                <div class="validation" id="validation"></div>
+            </div>
+            
+            <!-- Right Side - Preview -->
+            <div class="preview-section">
+                <h3>Live Preview</h3>
+                
+                <!-- Viewport Simulator -->
+                <div class="control-group">
+                    <label>Viewport Width: <span id="viewport-value">800px</span></label>
+                    <input type="range" id="viewport-slider" min="320" max="1280" value="800" step="1" style="width: 100%;">
+                </div>
+                
+                <!-- Preview Box -->
+                <div class="preview-box" id="preview-box">
+                    <div class="preview-text" id="preview-text">
+                        The quick brown fox jumps over the lazy dog
+                    </div>
+                    <div>
+                        Current size: <span id="current-size">24px</span>
+                    </div>
+                </div>
+                
+                <!-- Generated Code -->
+                <h3>Generated CSS</h3>
+                <div class="code-box">
+                    <button class="copy-btn" id="copy-btn">Copy</button>
+                    <code id="clamp-code">font-size: clamp(16px, calc(16px + 16 * ((100vw - 320px) / 960)), 32px);</code>
+                </div>
+                
+                <!-- Tooltip -->
+                <div id="tooltip" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #28a745; color: white; padding: 10px 20px; border-radius: 5px;">Copied!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get elements
+        const minFont = document.getElementById('min-font');
+        const maxFont = document.getElementById('max-font');
+        const minViewport = document.getElementById('min-viewport');
+        const maxViewport = document.getElementById('max-viewport');
+        
+        const minFontRange = document.getElementById('min-font-range');
+        const maxFontRange = document.getElementById('max-font-range');
+        const minViewportRange = document.getElementById('min-viewport-range');
+        const maxViewportRange = document.getElementById('max-viewport-range');
+        const viewportSlider = document.getElementById('viewport-slider');
+        
+        const unitPx = document.getElementById('unit-px');
+        const unitRem = document.getElementById('unit-rem');
+        const minUnit = document.getElementById('min-unit');
+        const maxUnit = document.getElementById('max-unit');
+        
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const copyBtn = document.getElementById('copy-btn');
+        
+        const viewportValue = document.getElementById('viewport-value');
+        const previewBox = document.getElementById('preview-box');
+        const previewText = document.getElementById('preview-text');
+        const currentSize = document.getElementById('current-size');
+        const clampCode = document.getElementById('clamp-code');
+        const validation = document.getElementById('validation');
+        const tooltip = document.getElementById('tooltip');
+        
+        // State
+        let unit = 'px';
+        let darkMode = false;
+        
+        // Presets
+        const presets = {
+            heading: { min: 32, max: 72, minVw: 320, maxVw: 1920 },
+            body: { min: 16, max: 20, minVw: 320, maxVw: 1280 },
+            small: { min: 12, max: 14, minVw: 320, maxVw: 1280 }
+        };
+        
+        // Load saved settings
+        try {
+            const saved = localStorage.getItem('clampState');
+            if (saved) {
+                const data = JSON.parse(saved);
+                unit = data.unit || 'px';
+                darkMode = data.darkMode || false;
+                minFont.value = data.minFont || 16;
+                maxFont.value = data.maxFont || 32;
+                minViewport.value = data.minViewport || 320;
+                maxViewport.value = data.maxViewport || 1280;
+                
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                    darkModeToggle.textContent = 'Light Mode';
+                }
+            }
+        } catch(e) {}
+        
+        // Update ranges
+        minFontRange.value = minFont.value;
+        maxFontRange.value = maxFont.value;
+        minViewportRange.value = minViewport.value;
+        maxViewportRange.value = maxViewport.value;
+        
+        // Unit toggle
+        function setUnit(newUnit) {
+            if (unit === newUnit) return;
+            
+            if (newUnit === 'rem') {
+                minFont.value = (parseFloat(minFont.value) / 16).toFixed(2);
+                maxFont.value = (parseFloat(maxFont.value) / 16).toFixed(2);
+                minFontRange.value = minFont.value;
+                maxFontRange.value = maxFont.value;
+                minUnit.textContent = '(rem)';
+                maxUnit.textContent = '(rem)';
+                unitPx.classList.remove('active');
+                unitRem.classList.add('active');
+            } else {
+                minFont.value = (parseFloat(minFont.value) * 16).toFixed(1);
+                maxFont.value = (parseFloat(maxFont.value) * 16).toFixed(1);
+                minFontRange.value = minFont.value;
+                maxFontRange.value = maxFont.value;
+                minUnit.textContent = '(px)';
+                maxUnit.textContent = '(px)';
+                unitRem.classList.remove('active');
+                unitPx.classList.add('active');
+            }
+            
+            unit = newUnit;
+            updateAll();
+            saveState();
+        }
+        
+        unitPx.onclick = () => setUnit('px');
+        unitRem.onclick = () => setUnit('rem');
+        
+        // Input handlers
+        minFont.oninput = function() {
+            minFontRange.value = this.value;
+            updateAll();
+        };
+        
+        maxFont.oninput = function() {
+            maxFontRange.value = this.value;
+            updateAll();
+        };
+        
+        minViewport.oninput = function() {
+            minViewportRange.value = this.value;
+            viewportSlider.min = this.value;
+            updateAll();
+        };
+        
+        maxViewport.oninput = function() {
+            maxViewportRange.value = this.value;
+            viewportSlider.max = this.value;
+            if (viewportSlider.value > this.value) {
+                viewportSlider.value = this.value;
+            }
+            updateAll();
+        };
+        
+        minFontRange.oninput = function() {
+            minFont.value = this.value;
+            updateAll();
+        };
+        
+        maxFontRange.oninput = function() {
+            maxFont.value = this.value;
+            updateAll();
+        };
+        
+        minViewportRange.oninput = function() {
+            minViewport.value = this.value;
+            viewportSlider.min = this.value;
+            updateAll();
+        };
+        
+        maxViewportRange.oninput = function() {
+            maxViewport.value = this.value;
+            viewportSlider.max = this.value;
+            if (viewportSlider.value > this.value) {
+                viewportSlider.value = this.value;
+            }
+            updateAll();
+        };
+        
+        viewportSlider.oninput = function() {
+            viewportValue.textContent = this.value + 'px';
+            previewBox.style.width = this.value + 'px';
+            updatePreviewSize();
+        };
+        
+        // Presets
+        presetBtns.forEach(btn => {
+            btn.onclick = function() {
+                const preset = presets[this.dataset.preset];
+                if (preset) {
+                    minViewport.value = preset.minVw;
+                    maxViewport.value = preset.maxVw;
+                    minViewportRange.value = preset.minVw;
+                    maxViewportRange.value = preset.maxVw;
+                    
+                    if (unit === 'rem') {
+                        minFont.value = (preset.min / 16).toFixed(2);
+                        maxFont.value = (preset.max / 16).toFixed(2);
+                    } else {
+                        minFont.value = preset.min;
+                        maxFont.value = preset.max;
+                    }
+                    
+                    minFontRange.value = minFont.value;
+                    maxFontRange.value = maxFont.value;
+                    
+                    viewportSlider.min = preset.minVw;
+                    viewportSlider.max = preset.maxVw;
+                    
+                    updateAll();
+                }
+            };
+        });
+        
+        // Reset
+        resetBtn.onclick = function() {
+            if (unit === 'rem') {
+                minFont.value = 1;
+                maxFont.value = 2;
+            } else {
+                minFont.value = 16;
+                maxFont.value = 32;
+            }
+            minViewport.value = 320;
+            maxViewport.value = 1280;
+            
+            minFontRange.value = minFont.value;
+            maxFontRange.value = maxFont.value;
+            minViewportRange.value = 320;
+            maxViewportRange.value = 1280;
+            
+            viewportSlider.min = 320;
+            viewportSlider.max = 1280;
+            viewportSlider.value = 800;
+            viewportValue.textContent = '800px';
+            
+            updateAll();
+            saveState();
+        };
+        
+        // Dark mode
+        darkModeToggle.onclick = function() {
+            darkMode = !darkMode;
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                this.textContent = 'Light Mode';
+            } else {
+                document.body.classList.remove('dark-mode');
+                this.textContent = 'Dark Mode';
+            }
+            saveState();
+        };
+        
+        // Copy
+        copyBtn.onclick = function() {
+            navigator.clipboard.writeText(clampCode.textContent).then(() => {
+                tooltip.style.display = 'block';
+                setTimeout(() => {
+                    tooltip.style.display = 'none';
+                }, 2000);
+            });
+        };
+        
+        // Validation
+        function validate() {
+            let msg = '';
+            let type = 'success';
+            
+            if (parseFloat(minFont.value) >= parseFloat(maxFont.value)) {
+                msg = '⚠️ Min font must be less than max font';
+                type = 'warning';
+            } else if (parseFloat(minViewport.value) >= parseFloat(maxViewport.value)) {
+                msg = '⚠️ Min viewport must be less than max viewport';
+                type = 'warning';
+            } else {
+                msg = '✅ All good';
+                type = 'success';
+            }
+            
+            validation.className = 'validation ' + type;
+            validation.textContent = msg;
+        }
+        
+        // Update preview size
+        function updatePreviewSize() {
+            let min = parseFloat(minFont.value);
+            let max = parseFloat(maxFont.value);
+            
+            if (unit === 'rem') {
+                min = min * 16;
+                max = max * 16;
+            }
+            
+            const minVw = parseFloat(minViewport.value);
+            const maxVw = parseFloat(maxViewport.value);
+            const currentVw = parseFloat(viewportSlider.value);
+            
+            let size;
+            if (currentVw <= minVw) {
+                size = min;
+            } else if (currentVw >= maxVw) {
+                size = max;
+            } else {
+                const slope = (max - min) / (maxVw - minVw);
+                size = min + slope * (currentVw - minVw);
+            }
+            
+            if (unit === 'rem') {
+                previewText.style.fontSize = (size / 16) + 'rem';
+                currentSize.textContent = (size / 16).toFixed(2) + 'rem';
+            } else {
+                previewText.style.fontSize = size + 'px';
+                currentSize.textContent = size.toFixed(1) + 'px';
+            }
+        }
+        
+        // Generate clamp
+        function generateClamp() {
+            const min = minFont.value;
+            const max = maxFont.value;
+            const minVw = minViewport.value;
+            const maxVw = maxViewport.value;
+            
+            let minCalc = min;
+            let maxCalc = max;
+            
+            if (unit === 'rem') {
+                minCalc = min * 16;
+                maxCalc = max * 16;
+            }
+            
+            const slope = (maxCalc - minCalc) / (maxVw - minVw);
+            
+            return `font-size: clamp(${min}${unit}, calc(${min}${unit} + ${slope.toFixed(3)} * (100vw - ${minVw}px)), ${max}${unit});`;
+        }
+        
+        // Update all
+        function updateAll() {
+            validate();
+            updatePreviewSize();
+            clampCode.textContent = generateClamp();
+        }
+        
+        // Save state
+        function saveState() {
+            try {
+                localStorage.setItem('clampState', JSON.stringify({
+                    unit: unit,
+                    darkMode: darkMode,
+                    minFont: minFont.value,
+                    maxFont: maxFont.value,
+                    minViewport: minViewport.value,
+                    maxViewport: maxViewport.value
+                }));
+            } catch(e) {}
+        }
+        
+        // Initial update
+        updateAll();
+    </script>
+</body>
+</html>
